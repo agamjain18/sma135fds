@@ -60,7 +60,7 @@ const Header = () => {
           {/* Logo */}
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
-              Alex Johnson
+             aagam jain
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Full Stack Developer</p>
           </motion.div>
