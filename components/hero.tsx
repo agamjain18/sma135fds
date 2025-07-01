@@ -1,0 +1,312 @@
+"use client"
+import { motion } from "framer-motion"
+import { ArrowDown, Download, Mail, Briefcase } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+const Hero = () => {
+  // First line skills (moving right)
+  const firstLineSkills = [
+    { name: "React", color: "from-blue-400 to-blue-600", icon: "⚛️" },
+    { name: "JS", color: "from-yellow-400 to-yellow-600", icon: "🟨" },
+    { name: "TS", color: "from-blue-500 to-blue-700", icon: "🔷" },
+    { name: "Node", color: "from-green-400 to-green-600", icon: "🟢" },
+    { name: "Python", color: "from-green-500 to-blue-500", icon: "🐍" },
+    { name: "Flutter", color: "from-blue-400 to-cyan-500", icon: "💙" },
+    { name: "Firebase", color: "from-orange-400 to-red-500", icon: "🔥" },
+    { name: "Mongo", color: "from-green-500 to-green-700", icon: "🍃" },
+  ]
+
+  // Second line skills (moving left)
+  const secondLineSkills = [
+    { name: "Docker", color: "from-blue-500 to-cyan-600", icon: "🐳" },
+    { name: "AWS", color: "from-orange-400 to-orange-600", icon: "☁️" },
+    { name: "CSS", color: "from-purple-400 to-purple-600", icon: "🎨" },
+    { name: "Git", color: "from-red-400 to-red-600", icon: "📝" },
+    { name: "GraphQL", color: "from-pink-400 to-purple-600", icon: "💜" },
+    { name: "Next", color: "from-gray-600 to-black", icon: "⚡" },
+    { name: "Tailwind", color: "from-cyan-400 to-blue-500", icon: "🌊" },
+    { name: "Redux", color: "from-purple-500 to-purple-700", icon: "🔄" },
+  ]
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
+  return (
+    <section id="hero" className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden pt-24">
+      {/* Enhanced Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-black dark:to-gray-950" />
+
+      {/* Animated Background Orbs */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400/20 dark:bg-cyan-600/10 rounded-full blur-3xl animate-pulse delay-2000" />
+      </div>
+
+      {/* First Line - Moving Right */}
+      <div className="absolute top-[15%] left-0 w-full overflow-hidden pointer-events-none z-[5]">
+        <motion.div
+          initial={{ x: "0%" }}
+          animate={{ x: ["-50%", "50%"] }}
+          transition={{
+            duration: 30,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
+          }}
+          className="flex gap-8 whitespace-nowrap"
+          style={{ width: "600%" }}
+        >
+          {/* Create 6 copies for seamless loop */}
+          {Array.from({ length: 6 }).map((_, copyIndex) =>
+            firstLineSkills.map((skill, index) => (
+              <motion.div
+                key={`first-${copyIndex}-${index}`}
+                initial={{ scale: 1, opacity: 1 }}
+                animate={{
+                  scale: [0.8, 1, 0.8],
+                  opacity: [0.6, 0.9, 0.6],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                  delay: (copyIndex * firstLineSkills.length + index) * 0.1,
+                }}
+                className="flex-shrink-0"
+              >
+                {/* 3D Glassmorphism Square */}
+                <div
+                  className={`
+                  w-16 h-16 md:w-20 md:h-20
+                  bg-gradient-to-br ${skill.color}
+                  rounded-xl
+                  shadow-2xl shadow-black/30 dark:shadow-black/50
+                  border border-white/40 dark:border-white/20
+                  relative overflow-hidden
+                  backdrop-blur-lg
+                  before:absolute before:inset-0 before:bg-white/10 before:rounded-xl
+                  after:absolute after:top-2 after:left-2 after:w-4 after:h-4 after:bg-white/50 after:rounded-lg after:blur-sm
+                `}
+                  style={{
+                    background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom right, var(--tw-gradient-stops))`,
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                  }}
+                >
+                  {/* Glass highlight */}
+                  <div className="absolute top-1 left-1 w-6 h-6 md:w-8 md:h-8 bg-white/30 rounded-lg blur-md" />
+
+                  {/* Skill Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl">
+                    {skill.icon}
+                  </div>
+
+                  {/* Skill Name */}
+                  <div className="absolute bottom-1 left-0 right-0 text-center">
+                    <span className="text-white text-xs md:text-sm font-bold drop-shadow-lg">{skill.name}</span>
+                  </div>
+
+                  {/* 3D depth shadow */}
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-3 md:w-16 md:h-4 bg-black/20 rounded-lg blur-md" />
+                </div>
+              </motion.div>
+            )),
+          )}
+        </motion.div>
+      </div>
+
+      {/* Second Line - Moving Left */}
+      <div className="absolute top-[25%] left-0 w-full overflow-hidden pointer-events-none z-[5]">
+        <motion.div
+          initial={{ x: "0%" }}
+          animate={{ x: ["50%", "-50%"] }}
+          transition={{
+            duration: 30,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
+          }}
+          className="flex gap-8 whitespace-nowrap"
+          style={{ width: "600%" }}
+        >
+          {/* Create 6 copies for seamless loop */}
+          {Array.from({ length: 6 }).map((_, copyIndex) =>
+            secondLineSkills.map((skill, index) => (
+              <motion.div
+                key={`second-${copyIndex}-${index}`}
+                initial={{ scale: 1, opacity: 1 }}
+                animate={{
+                  scale: [0.8, 1, 0.8],
+                  opacity: [0.6, 0.9, 0.6],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                  delay: (copyIndex * secondLineSkills.length + index) * 0.1,
+                }}
+                className="flex-shrink-0"
+              >
+                {/* 3D Glassmorphism Square */}
+                <div
+                  className={`
+                  w-16 h-16 md:w-20 md:h-20
+                  bg-gradient-to-br ${skill.color}
+                  rounded-xl
+                  shadow-2xl shadow-black/30 dark:shadow-black/50
+                  border border-white/40 dark:border-white/20
+                  relative overflow-hidden
+                  backdrop-blur-lg
+                  before:absolute before:inset-0 before:bg-white/10 before:rounded-xl
+                  after:absolute after:top-2 after:left-2 after:w-4 after:h-4 after:bg-white/50 after:rounded-lg after:blur-sm
+                `}
+                  style={{
+                    background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom right, var(--tw-gradient-stops))`,
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                  }}
+                >
+                  {/* Glass highlight */}
+                  <div className="absolute top-1 left-1 w-6 h-6 md:w-8 md:h-8 bg-white/30 rounded-lg blur-md" />
+
+                  {/* Skill Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl">
+                    {skill.icon}
+                  </div>
+
+                  {/* Skill Name */}
+                  <div className="absolute bottom-1 left-0 right-0 text-center">
+                    <span className="text-white text-xs md:text-sm font-bold drop-shadow-lg">{skill.name}</span>
+                  </div>
+
+                  {/* 3D depth shadow */}
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-3 md:w-16 md:h-4 bg-black/20 rounded-lg blur-md" />
+                </div>
+              </motion.div>
+            )),
+          )}
+        </motion.div>
+      </div>
+
+      <div className="container mx-auto text-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="max-w-6xl mx-auto"
+        >
+          {/* Reduced Profile Image Section with Top Gap */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2, type: "spring", stiffness: 100 }}
+            className="mb-8 mt-8 relative z-[100]"
+          >
+            <div className="relative inline-block">
+              {/* Static Ring - Remove animation */}
+              <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 rounded-full z-[110]">
+                <div className="w-full h-full rounded-full border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-1">
+                  <div className="w-full h-full rounded-full bg-white dark:bg-black" />
+                </div>
+              </div>
+
+              {/* Glow Effect */}
+              <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-full blur-2xl opacity-20 animate-pulse z-[105]" />
+
+              {/* Profile Image */}
+              <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-6 border-white dark:border-gray-900 shadow-2xl z-[110]">
+                <img
+                  src="/placeholder.svg?height=224&width=224"
+                  alt="Alex Johnson"
+                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                />
+              </div>
+
+              {/* Status Indicator */}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                className="absolute bottom-6 right-6 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-900 shadow-lg z-[120]"
+              >
+                <div className="w-full h-full bg-green-400 rounded-full animate-ping opacity-75" />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Name Section - Moved below profile image */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="mb-12 relative z-[100]"
+          >
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+              <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                Hi, I'm Alex Johnson
+              </span>
+            </h1>
+          </motion.div>
+
+          {/* Enhanced CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center mb-16 relative z-20"
+          >
+            <Button
+              size="lg"
+              onClick={() => scrollToSection("projects")}
+              className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 px-8 py-4 text-lg"
+            >
+              <Briefcase className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
+              View My Work
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => scrollToSection("contact")}
+              className="group border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-300 px-8 py-4 text-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
+            >
+              <Mail className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
+              Let's Connect
+            </Button>
+            <Button
+              size="lg"
+              variant="ghost"
+              className="group hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 px-8 py-4 text-lg bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm"
+            >
+              <Download className="mr-3 h-6 w-6 group-hover:bounce transition-transform" />
+              Download CV
+            </Button>
+          </motion.div>
+
+          {/* Enhanced Scroll Indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="flex flex-col items-center relative z-20"
+          >
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-medium">Scroll to explore my journey</p>
+            <motion.div
+              animate={{ y: [0, 15, 0] }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              className="cursor-pointer group"
+              onClick={() => scrollToSection("about")}
+            >
+              <div className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-blue-500 dark:group-hover:border-blue-400 flex items-center justify-center transition-colors duration-300 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+                <ArrowDown className="h-6 w-6 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+              </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+export default Hero
