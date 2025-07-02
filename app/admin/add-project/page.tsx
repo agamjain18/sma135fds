@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, X, Eye, EyeOff, Lock, ArrowLeft } from "lucide-react"
+import { Plus, X, Eye, EyeOff, Lock, ArrowLeft, Upload } from "lucide-react"
 import Link from "next/link"
 
 interface Project {
@@ -46,6 +46,9 @@ export default function AddProjectPage() {
 
   const [currentTech, setCurrentTech] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [imageUploadType, setImageUploadType] = useState<"url" | "upload">("url")
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   // Simple authentication (in real app, this would be more secure)
   const handleAuth = (e: React.FormEvent) => {
@@ -58,6 +61,46 @@ export default function AddProjectPage() {
     } else {
       setAuthError("Invalid username or password")
     }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file")
+      return
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB")
+      return
+    }
+
+    setIsUploading(true)
+
+    try {
+      // Convert to base64 for preview (in real app, you'd upload to cloud storage)
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const result = event.target?.result as string
+        setUploadedImage(result)
+        setProjectData((prev) => ({ ...prev, image: result }))
+        setIsUploading(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      alert("Error uploading image. Please try again.")
+      setIsUploading(false)
+    }
+  }
+
+  const handleRemoveUploadedImage = () => {
+    setUploadedImage(null)
+    setProjectData((prev) => ({ ...prev, image: "" }))
   }
 
   const handleAddTechnology = () => {
@@ -105,6 +148,7 @@ export default function AddProjectPage() {
         liveUrl: "",
         category: "",
       })
+      setUploadedImage(null)
 
       alert("Project added successfully!")
     } catch (error) {
@@ -255,16 +299,88 @@ export default function AddProjectPage() {
                 <div className="space-y-6">
                   <h3 className="text-lg font-semibold border-b pb-2">Technical Details</h3>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="image">Project Image URL *</Label>
-                    <Input
-                      id="image"
-                      type="url"
-                      value={projectData.image}
-                      onChange={(e) => setProjectData((prev) => ({ ...prev, image: e.target.value }))}
-                      placeholder="https://example.com/image.jpg"
-                      required
-                    />
+                  {/* Image Upload Section */}
+                  <div className="space-y-4">
+                    <Label>Project Image *</Label>
+
+                    {/* Image Upload Type Toggle */}
+                    <div className="flex gap-2 mb-4">
+                      <Button
+                        type="button"
+                        variant={imageUploadType === "url" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setImageUploadType("url")}
+                      >
+                        URL
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={imageUploadType === "upload" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setImageUploadType("upload")}
+                      >
+                        Upload
+                      </Button>
+                    </div>
+
+                    {imageUploadType === "url" ? (
+                      <div className="space-y-2">
+                        <Input
+                          type="url"
+                          value={projectData.image}
+                          onChange={(e) => setProjectData((prev) => ({ ...prev, image: e.target.value }))}
+                          placeholder="https://example.com/image.jpg"
+                          required={!uploadedImage}
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {!uploadedImage ? (
+                          <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
+                              id="image-upload"
+                              disabled={isUploading}
+                            />
+                            <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center gap-4">
+                              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                                {isUploading ? (
+                                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                ) : (
+                                  <Upload className="w-8 h-8 text-muted-foreground" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">
+                                  {isUploading ? "Uploading..." : "Click to upload image"}
+                                </p>
+                                <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 5MB</p>
+                              </div>
+                            </label>
+                          </div>
+                        ) : (
+                          <div className="relative">
+                            <img
+                              src={uploadedImage || "/placeholder.svg"}
+                              alt="Uploaded project"
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={handleRemoveUploadedImage}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -323,24 +439,22 @@ export default function AddProjectPage() {
               </div>
 
               {/* Preview */}
-              {projectData.title && (
+              {projectData.title && (projectData.image || uploadedImage) && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold border-b pb-2">Preview</h3>
                   <Card>
                     <CardContent className="p-6">
                       <div className="flex gap-6">
-                        {projectData.image && (
-                          <div className="flex-shrink-0">
-                            <img
-                              src={projectData.image || "/placeholder.svg"}
-                              alt={projectData.title}
-                              className="w-32 h-24 object-cover rounded-lg"
-                              onError={(e) => {
-                                ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=96&width=128"
-                              }}
-                            />
-                          </div>
-                        )}
+                        <div className="flex-shrink-0">
+                          <img
+                            src={uploadedImage || projectData.image || "/placeholder.svg"}
+                            alt={projectData.title}
+                            className="w-32 h-24 object-cover rounded-lg"
+                            onError={(e) => {
+                              ;(e.target as HTMLImageElement).src = "/placeholder.svg?height=96&width=128"
+                            }}
+                          />
+                        </div>
                         <div className="flex-1">
                           <h4 className="text-xl font-semibold">{projectData.title}</h4>
                           <p className="text-sm text-muted-foreground mb-2">{projectData.category}</p>
@@ -372,7 +486,8 @@ export default function AddProjectPage() {
                     isSubmitting ||
                     !projectData.title ||
                     !projectData.description ||
-                    projectData.technologies.length === 0
+                    projectData.technologies.length === 0 ||
+                    (!projectData.image && !uploadedImage)
                   }
                 >
                   {isSubmitting ? "Adding Project..." : "Add Project"}
