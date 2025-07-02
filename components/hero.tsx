@@ -4,6 +4,15 @@ import { ArrowDown, Download, Mail, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const Hero = () => {
+  // 5 skills to display around profile picture
+  const profileSkills = [
+    { name: "React", color: "from-blue-400 to-blue-600", icon: "⚛️", position: { top: "10%", left: "15%" } },
+    { name: "JS", color: "from-yellow-400 to-yellow-600", icon: "🟨", position: { top: "25%", right: "10%" } },
+    { name: "Node", color: "from-green-400 to-green-600", icon: "🟢", position: { bottom: "20%", left: "5%" } },
+    { name: "Python", color: "from-green-500 to-blue-500", icon: "🐍", position: { bottom: "10%", right: "20%" } },
+    { name: "Firebase", color: "from-orange-400 to-red-500", icon: "🔥", position: { top: "50%", left: "-5%" } },
+  ]
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
@@ -30,7 +39,7 @@ const Hero = () => {
           transition={{ duration: 1, ease: "easeOut" }}
           className="max-w-6xl mx-auto"
         >
-          {/* Reduced Profile Image Section with Top Gap */}
+          {/* Profile Image Section with Floating Skills */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -38,7 +47,76 @@ const Hero = () => {
             className="mb-8 mt-8 relative z-[100]"
           >
             <div className="relative inline-block">
-              {/* Static Ring - Remove animation */}
+              {/* Floating Skills Around Profile */}
+              {profileSkills.map((skill, index) => (
+                <motion.div
+                  key={skill.name}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    opacity: { duration: 0.8, delay: 1 + index * 0.2 },
+                    scale: { duration: 0.8, delay: 1 + index * 0.2 },
+                    y: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "easeInOut",
+                      delay: index * 0.5,
+                    },
+                  }}
+                  className="absolute z-[90]"
+                  style={{
+                    top: skill.position.top,
+                    left: skill.position.left,
+                    right: skill.position.right,
+                    bottom: skill.position.bottom,
+                  }}
+                >
+                  {/* 3D Glassmorphism Square */}
+                  <div
+                    className={`
+                    w-12 h-12 md:w-16 md:h-16
+                    bg-gradient-to-br ${skill.color}
+                    rounded-xl
+                    shadow-2xl shadow-black/30 dark:shadow-black/50
+                    border border-white/40 dark:border-white/20
+                    relative overflow-hidden
+                    backdrop-blur-lg
+                    before:absolute before:inset-0 before:bg-white/10 before:rounded-xl
+                    after:absolute after:top-1 after:left-1 after:w-3 after:h-3 after:bg-white/50 after:rounded-lg after:blur-sm
+                    hover:scale-110 transition-transform duration-300 cursor-pointer
+                  `}
+                    style={{
+                      background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom right, var(--tw-gradient-stops))`,
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                    }}
+                  >
+                    {/* Glass highlight */}
+                    <div className="absolute top-1 left-1 w-4 h-4 md:w-6 md:h-6 bg-white/30 rounded-lg blur-md" />
+
+                    {/* Skill Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center text-lg md:text-2xl">
+                      {skill.icon}
+                    </div>
+
+                    {/* Skill Name */}
+                    <div className="absolute -bottom-6 left-0 right-0 text-center">
+                      <span className="text-gray-700 dark:text-gray-300 text-xs md:text-sm font-bold drop-shadow-lg">
+                        {skill.name}
+                      </span>
+                    </div>
+
+                    {/* 3D depth shadow */}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-2 md:w-12 md:h-3 bg-black/20 rounded-lg blur-md" />
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Static Ring */}
               <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 rounded-full z-[110]">
                 <div className="w-full h-full rounded-full border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-1">
                   <div className="w-full h-full rounded-full bg-white dark:bg-black" />
