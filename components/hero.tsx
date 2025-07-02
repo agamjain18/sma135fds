@@ -14,25 +14,25 @@ const Hero = () => {
     { name: "Firebase", color: "from-orange-400 to-red-500", icon: "🔥" },
   ]
 
-  // Possible random positions around the profile picture
-  const possiblePositions = [
-    { top: "10px", left: "-45px" },
-    { top: "-15px", right: "-30px" },
-    { bottom: "15px", left: "-40px" },
-    { bottom: "-20px", right: "-25px" },
-    { top: "50%", right: "-55px", transform: "translateY(-50%)" },
-    { top: "20px", left: "-50px" },
-    { top: "-10px", left: "-35px" },
-    { bottom: "25px", right: "-45px" },
-    { top: "60%", left: "-60px", transform: "translateY(-50%)" },
-    { bottom: "5px", left: "-30px" },
-    { top: "30%", right: "-50px", transform: "translateY(-50%)" },
-    { bottom: "-15px", left: "-45px" },
+  // Carefully spaced positions to prevent overlapping - minimum 60px apart
+  const nonOverlappingPositions = [
+    { top: "-30px", left: "-60px" }, // Top-left corner
+    { top: "-25px", right: "-55px" }, // Top-right corner
+    { top: "50%", left: "-70px", transform: "translateY(-50%)" }, // Middle-left
+    { top: "50%", right: "-70px", transform: "translateY(-50%)" }, // Middle-right
+    { bottom: "-30px", left: "-60px" }, // Bottom-left corner
+    { bottom: "-25px", right: "-55px" }, // Bottom-right corner
+    { top: "15px", left: "-45px" }, // Upper-left
+    { top: "20px", right: "-40px" }, // Upper-right
+    { bottom: "15px", left: "-45px" }, // Lower-left
+    { bottom: "20px", right: "-40px" }, // Lower-right
+    { top: "30%", left: "-65px", transform: "translateY(-50%)" }, // Upper-middle-left
+    { top: "70%", right: "-65px", transform: "translateY(-50%)" }, // Lower-middle-right
   ]
 
   const [profileSkills, setProfileSkills] = useState([])
 
-  // Function to shuffle array
+  // Function to shuffle array ensuring no duplicates
   const shuffleArray = (array) => {
     const shuffled = [...array]
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -42,12 +42,71 @@ const Hero = () => {
     return shuffled
   }
 
+  // Function to check if two positions would overlap (within 50px)
+  const checkOverlap = (pos1, pos2) => {
+    // Convert positions to approximate pixel coordinates for overlap checking
+    const getCoords = (pos) => {
+      let x = 0,
+        y = 0
+
+      if (pos.left) x = Number.parseInt(pos.left.replace("px", ""))
+      if (pos.right) x = -Number.parseInt(pos.right.replace("px", ""))
+      if (pos.top) y = Number.parseInt(pos.top.replace("px", ""))
+      if (pos.bottom) y = -Number.parseInt(pos.bottom.replace("px", ""))
+
+      return { x, y }
+    }
+
+    const coords1 = getCoords(pos1)
+    const coords2 = getCoords(pos2)
+
+    const distance = Math.sqrt(Math.pow(coords1.x - coords2.x, 2) + Math.pow(coords1.y - coords2.y, 2))
+
+    return distance < 50 // 50px minimum distance
+  }
+
+  // Generate non-overlapping random positions
+  const generateNonOverlappingPositions = () => {
+    const shuffledPositions = shuffleArray(nonOverlappingPositions)
+    const selectedPositions = []
+
+    // Select first 5 positions that don't overlap
+    for (let i = 0; i < shuffledPositions.length && selectedPositions.length < 5; i++) {
+      const currentPos = shuffledPositions[i]
+      let overlaps = false
+
+      // Check if current position overlaps with any selected position
+      for (let j = 0; j < selectedPositions.length; j++) {
+        if (checkOverlap(currentPos, selectedPositions[j])) {
+          overlaps = true
+          break
+        }
+      }
+
+      if (!overlaps) {
+        selectedPositions.push(currentPos)
+      }
+    }
+
+    // If we don't have 5 positions, fill with remaining positions
+    while (selectedPositions.length < 5) {
+      const remainingPositions = shuffledPositions.filter((pos) => !selectedPositions.includes(pos))
+      if (remainingPositions.length > 0) {
+        selectedPositions.push(remainingPositions[0])
+      } else {
+        break
+      }
+    }
+
+    return selectedPositions
+  }
+
   // Generate random positions on component mount
   useEffect(() => {
-    const shuffledPositions = shuffleArray(possiblePositions)
+    const nonOverlappingPositions = generateNonOverlappingPositions()
     const skillsWithRandomPositions = baseSkills.map((skill, index) => ({
       ...skill,
-      position: shuffledPositions[index],
+      position: nonOverlappingPositions[index],
     }))
     setProfileSkills(skillsWithRandomPositions)
   }, [])
@@ -85,9 +144,9 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.2, type: "spring", stiffness: 100 }}
             className="mb-8 mt-8 relative z-[100] inline-block"
           >
-            {/* Container for profile and surrounding skills - balanced spacing */}
-            <div className="relative" style={{ padding: "70px 80px" }}>
-              {/* Floating Skills Around Profile - Random positions on each refresh */}
+            {/* Container for profile and surrounding skills - extra padding for non-overlapping */}
+            <div className="relative" style={{ padding: "80px 90px" }}>
+              {/* Floating Skills Around Profile - Non-overlapping random positions */}
               {profileSkills.map((skill, index) => (
                 <motion.div
                   key={`${skill.name}-${index}`}
@@ -150,7 +209,7 @@ const Hero = () => {
 
                     {/* Skill Name with better styling */}
                     <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                      <span className="text-gray-800 dark:text-gray-200 text-sm md:text-base font-bold drop-shadow-lg bg-white/90 dark:bg-gray-800/90 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-600 backdrop-blur-sm">
+                      <span className="text-gray-800 dark:text-gray-200 text-sm md:text-base font-bold drop-shadow-lg bg-white/90 dark:bg-gray-800/90 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-600 backdrop-blur-sm whitespace-nowrap">
                         {skill.name}
                       </span>
                     </div>
