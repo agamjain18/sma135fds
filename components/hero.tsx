@@ -2,41 +2,55 @@
 import { motion } from "framer-motion"
 import { ArrowDown, Download, Mail, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
 
 const Hero = () => {
-  // 5 skills positioned strategically around profile picture for visual balance
-  const profileSkills = [
-    {
-      name: "React",
-      color: "from-blue-400 to-blue-600",
-      icon: "⚛️",
-      position: { top: "10px", left: "-45px" },
-    },
-    {
-      name: "JS",
-      color: "from-yellow-400 to-yellow-600",
-      icon: "🟨",
-      position: { top: "-15px", right: "-30px" },
-    },
-    {
-      name: "Node",
-      color: "from-green-400 to-green-600",
-      icon: "🟢",
-      position: { bottom: "15px", left: "-40px" },
-    },
-    {
-      name: "Python",
-      color: "from-green-500 to-blue-500",
-      icon: "🐍",
-      position: { bottom: "-20px", right: "-25px" },
-    },
-    {
-      name: "Firebase",
-      color: "from-orange-400 to-red-500",
-      icon: "🔥",
-      position: { top: "50%", right: "-55px", transform: "translateY(-50%)" },
-    },
+  // Base skills data
+  const baseSkills = [
+    { name: "React", color: "from-blue-400 to-blue-600", icon: "⚛️" },
+    { name: "JS", color: "from-yellow-400 to-yellow-600", icon: "🟨" },
+    { name: "Node", color: "from-green-400 to-green-600", icon: "🟢" },
+    { name: "Python", color: "from-green-500 to-blue-500", icon: "🐍" },
+    { name: "Firebase", color: "from-orange-400 to-red-500", icon: "🔥" },
   ]
+
+  // Possible random positions around the profile picture
+  const possiblePositions = [
+    { top: "10px", left: "-45px" },
+    { top: "-15px", right: "-30px" },
+    { bottom: "15px", left: "-40px" },
+    { bottom: "-20px", right: "-25px" },
+    { top: "50%", right: "-55px", transform: "translateY(-50%)" },
+    { top: "20px", left: "-50px" },
+    { top: "-10px", left: "-35px" },
+    { bottom: "25px", right: "-45px" },
+    { top: "60%", left: "-60px", transform: "translateY(-50%)" },
+    { bottom: "5px", left: "-30px" },
+    { top: "30%", right: "-50px", transform: "translateY(-50%)" },
+    { bottom: "-15px", left: "-45px" },
+  ]
+
+  const [profileSkills, setProfileSkills] = useState([])
+
+  // Function to shuffle array
+  const shuffleArray = (array) => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  // Generate random positions on component mount
+  useEffect(() => {
+    const shuffledPositions = shuffleArray(possiblePositions)
+    const skillsWithRandomPositions = baseSkills.map((skill, index) => ({
+      ...skill,
+      position: shuffledPositions[index],
+    }))
+    setProfileSkills(skillsWithRandomPositions)
+  }, [])
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -73,10 +87,10 @@ const Hero = () => {
           >
             {/* Container for profile and surrounding skills - balanced spacing */}
             <div className="relative" style={{ padding: "70px 80px" }}>
-              {/* Floating Skills Around Profile - Strategically positioned */}
+              {/* Floating Skills Around Profile - Random positions on each refresh */}
               {profileSkills.map((skill, index) => (
                 <motion.div
-                  key={skill.name}
+                  key={`${skill.name}-${index}`}
                   initial={{ opacity: 0, scale: 0, rotate: -180 }}
                   animate={{
                     opacity: 1,
@@ -97,11 +111,11 @@ const Hero = () => {
                   }}
                   className="absolute z-[120]"
                   style={{
-                    top: skill.position.top,
-                    left: skill.position.left,
-                    right: skill.position.right,
-                    bottom: skill.position.bottom,
-                    transform: skill.position.transform,
+                    top: skill.position?.top,
+                    left: skill.position?.left,
+                    right: skill.position?.right,
+                    bottom: skill.position?.bottom,
+                    transform: skill.position?.transform,
                   }}
                 >
                   {/* 3D Glassmorphism Circle with enhanced styling */}
