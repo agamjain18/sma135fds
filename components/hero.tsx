@@ -1,331 +1,335 @@
 "use client"
-import { motion } from "framer-motion"
-import { ArrowDown, Download, Mail, Briefcase } from "lucide-react"
-import { Button } from "@/components/ui/button"
+
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { ArrowDown, Github, Linkedin, Mail, ExternalLink, Calendar, Award, Users, Code } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Image from "next/image"
 
 const Hero = () => {
-  // Base skills data
-  const baseSkills = [
-    { name: "React", color: "from-blue-400 to-blue-600", icon: "⚛️" },
-    { name: "JS", color: "from-yellow-400 to-yellow-600", icon: "🟨" },
-    { name: "Node", color: "from-green-400 to-green-600", icon: "🟢" },
-    { name: "Python", color: "from-green-500 to-blue-500", icon: "🐍" },
-    { name: "Firebase", color: "from-orange-400 to-red-500", icon: "🔥" },
+  const [skillPositions, setSkillPositions] = useState<
+    Array<{ top: string; left: string; right?: string; bottom?: string }>
+  >([])
+
+  const skills = [
+    { name: "React", icon: "⚛️" },
+    { name: "JavaScript", icon: "🟨" },
+    { name: "Node.js", icon: "🟢" },
+    { name: "Python", icon: "🐍" },
+    { name: "Firebase", icon: "🔥" },
   ]
 
-  // Carefully spaced positions to prevent overlapping - minimum 60px apart
-  const nonOverlappingPositions = [
-    { top: "-30px", left: "-60px" }, // Top-left corner
-    { top: "-25px", right: "-55px" }, // Top-right corner
-    { top: "50%", left: "-70px", transform: "translateY(-50%)" }, // Middle-left
-    { top: "50%", right: "-70px", transform: "translateY(-50%)" }, // Middle-right
-    { bottom: "-30px", left: "-60px" }, // Bottom-left corner
-    { bottom: "-25px", right: "-55px" }, // Bottom-right corner
-    { top: "15px", left: "-45px" }, // Upper-left
-    { top: "20px", right: "-40px" }, // Upper-right
-    { bottom: "15px", left: "-45px" }, // Lower-left
-    { bottom: "20px", right: "-40px" }, // Lower-right
-    { top: "30%", left: "-65px", transform: "translateY(-50%)" }, // Upper-middle-left
-    { top: "70%", right: "-65px", transform: "translateY(-50%)" }, // Lower-middle-right
+  const experienceStats = [
+    {
+      icon: Calendar,
+      value: "5+",
+      label: "Years Experience",
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: Code,
+      value: "50+",
+      label: "Projects Completed",
+      color: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: Users,
+      value: "20+",
+      label: "Happy Clients",
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      icon: Award,
+      value: "15+",
+      label: "Technologies",
+      color: "from-orange-500 to-red-500",
+    },
   ]
 
-  const [profileSkills, setProfileSkills] = useState([])
+  // Position pool for skills around profile picture
+  const positionPool = [
+    { top: "-30px", left: "-40px" },
+    { top: "-20px", right: "-50px" },
+    { top: "20px", right: "-45px" },
+    { bottom: "-10px", right: "-40px" },
+    { bottom: "30px", left: "-35px" },
+    { top: "50%", left: "-55px", transform: "translateY(-50%)" },
+    { top: "50%", right: "-60px", transform: "translateY(-50%)" },
+    { top: "-35px", left: "50%", transform: "translateX(-50%)" },
+    { bottom: "-35px", left: "50%", transform: "translateX(-50%)" },
+    { top: "10px", left: "-30px" },
+    { bottom: "10px", right: "-30px" },
+    { top: "70%", left: "-45px" },
+  ]
 
-  // Function to shuffle array ensuring no duplicates
-  const shuffleArray = (array) => {
-    const shuffled = [...array]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-    }
-    return shuffled
-  }
-
-  // Function to check if two positions would overlap (within 50px)
-  const checkOverlap = (pos1, pos2) => {
-    // Convert positions to approximate pixel coordinates for overlap checking
-    const getCoords = (pos) => {
+  // Function to check if two positions overlap
+  const checkOverlap = (pos1: any, pos2: any) => {
+    const getCoordinates = (pos: any) => {
       let x = 0,
         y = 0
-
-      if (pos.left) x = Number.parseInt(pos.left.replace("px", ""))
-      if (pos.right) x = -Number.parseInt(pos.right.replace("px", ""))
-      if (pos.top) y = Number.parseInt(pos.top.replace("px", ""))
-      if (pos.bottom) y = -Number.parseInt(pos.bottom.replace("px", ""))
-
+      if (pos.left) x = Number.parseInt(pos.left)
+      if (pos.right) x = -Number.parseInt(pos.right)
+      if (pos.top) y = Number.parseInt(pos.top)
+      if (pos.bottom) y = -Number.parseInt(pos.bottom)
       return { x, y }
     }
 
-    const coords1 = getCoords(pos1)
-    const coords2 = getCoords(pos2)
-
-    const distance = Math.sqrt(Math.pow(coords1.x - coords2.x, 2) + Math.pow(coords1.y - coords2.y, 2))
-
-    return distance < 50 // 50px minimum distance
+    const coord1 = getCoordinates(pos1)
+    const coord2 = getCoordinates(pos2)
+    const distance = Math.sqrt(Math.pow(coord1.x - coord2.x, 2) + Math.pow(coord1.y - coord2.y, 2))
+    return distance < 50 // Minimum 50px distance
   }
 
-  // Generate non-overlapping random positions
+  // Generate non-overlapping positions
   const generateNonOverlappingPositions = () => {
-    const shuffledPositions = shuffleArray(nonOverlappingPositions)
-    const selectedPositions = []
+    const shuffled = [...positionPool].sort(() => Math.random() - 0.5)
+    const selected = []
 
-    // Select first 5 positions that don't overlap
-    for (let i = 0; i < shuffledPositions.length && selectedPositions.length < 5; i++) {
-      const currentPos = shuffledPositions[i]
-      let overlaps = false
-
-      // Check if current position overlaps with any selected position
-      for (let j = 0; j < selectedPositions.length; j++) {
-        if (checkOverlap(currentPos, selectedPositions[j])) {
-          overlaps = true
-          break
-        }
-      }
+    for (let i = 0; i < shuffled.length && selected.length < 5; i++) {
+      const candidate = shuffled[i]
+      const overlaps = selected.some((pos) => checkOverlap(candidate, pos))
 
       if (!overlaps) {
-        selectedPositions.push(currentPos)
+        selected.push(candidate)
       }
     }
 
-    // If we don't have 5 positions, fill with remaining positions
-    while (selectedPositions.length < 5) {
-      const remainingPositions = shuffledPositions.filter((pos) => !selectedPositions.includes(pos))
-      if (remainingPositions.length > 0) {
-        selectedPositions.push(remainingPositions[0])
-      } else {
-        break
-      }
+    // Fill remaining slots if needed
+    while (selected.length < 5) {
+      selected.push(shuffled[selected.length])
     }
 
-    return selectedPositions
+    return selected
   }
 
-  // Generate random positions on component mount
   useEffect(() => {
-    const nonOverlappingPositions = generateNonOverlappingPositions()
-    const skillsWithRandomPositions = baseSkills.map((skill, index) => ({
-      ...skill,
-      position: nonOverlappingPositions[index],
-    }))
-    setProfileSkills(skillsWithRandomPositions)
+    setSkillPositions(generateNonOverlappingPositions())
   }, [])
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden pt-24">
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-black dark:to-gray-950" />
-
+    <section className="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-blue-50/30 dark:from-gray-950 dark:via-black dark:to-blue-950/20">
       {/* Animated Background Orbs */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-400/20 dark:bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400/20 dark:bg-cyan-600/10 rounded-full blur-3xl animate-pulse delay-2000" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
+          }}
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, -150, 0],
+            y: [0, 100, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
+          }}
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl"
+        />
       </div>
 
       <div className="container mx-auto text-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="max-w-6xl mx-auto"
-        >
-          {/* Profile Image Section with Skills Around It */}
+        <div className="max-w-4xl mx-auto">
+          {/* Profile Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.2, type: "spring", stiffness: 100 }}
-            className="mb-8 mt-8 relative z-[100] inline-block"
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative inline-block mb-8"
           >
-            {/* Container for profile and surrounding skills - extra padding for non-overlapping */}
-            <div className="relative" style={{ padding: "80px 90px" }}>
-              {/* Floating Skills Around Profile - Non-overlapping random positions */}
-              {profileSkills.map((skill, index) => (
+            {/* Profile Picture Container with Skills */}
+            <div className="relative p-20 inline-block">
+              {/* Profile Picture */}
+              <div className="relative">
+                <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 relative z-[110]">
+                  <Image
+                    src="/placeholder-user.jpg"
+                    alt="Profile"
+                    width={192}
+                    height={192}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Animated Ring */}
                 <motion.div
-                  key={`${skill.name}-${index}`}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-blue-400/50 dark:border-blue-500/50 scale-110"
+                />
+              </div>
+
+              {/* Floating Skills Around Profile */}
+              {skillPositions.map((position, index) => (
+                <motion.div
+                  key={`${skills[index].name}-${index}`}
                   initial={{ opacity: 0, scale: 0, rotate: -180 }}
                   animate={{
                     opacity: 1,
                     scale: 1,
                     rotate: 0,
-                    y: [0, -8, 0],
+                    y: [0, -10, 0],
                   }}
                   transition={{
-                    opacity: { duration: 0.6, delay: 1.2 + index * 0.15 },
-                    scale: { duration: 0.6, delay: 1.2 + index * 0.15 },
-                    rotate: { duration: 0.8, delay: 1.2 + index * 0.15 },
+                    duration: 0.6,
+                    delay: 0.8 + index * 0.1,
                     y: {
-                      duration: 2.5 + index * 0.3,
+                      duration: 2 + index * 0.3,
                       repeat: Number.POSITIVE_INFINITY,
                       ease: "easeInOut",
-                      delay: index * 0.4,
                     },
                   }}
-                  className="absolute z-[120]"
-                  style={{
-                    top: skill.position?.top,
-                    left: skill.position?.left,
-                    right: skill.position?.right,
-                    bottom: skill.position?.bottom,
-                    transform: skill.position?.transform,
+                  whileHover={{
+                    scale: 1.1,
+                    rotate: 12,
+                    transition: { duration: 0.2 },
                   }}
+                  className="absolute z-[120] cursor-pointer"
+                  style={position}
                 >
-                  {/* 3D Glassmorphism Circle with enhanced styling */}
-                  <div
-                    className={`
-                    w-16 h-16 md:w-20 md:h-20
-                    bg-gradient-to-br ${skill.color}
-                    rounded-full
-                    shadow-2xl shadow-black/40 dark:shadow-black/60
-                    border-2 border-white/50 dark:border-white/30
-                    relative overflow-hidden
-                    backdrop-blur-xl
-                    hover:scale-110 hover:rotate-12 transition-all duration-300 cursor-pointer
-                    group
-                  `}
-                    style={{
-                      background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-                      backdropFilter: "blur(25px)",
-                      WebkitBackdropFilter: "blur(25px)",
-                    }}
-                  >
-                    {/* Enhanced glass highlight */}
-                    <div className="absolute top-2 left-2 w-6 h-6 md:w-8 md:h-8 bg-white/40 rounded-full blur-sm" />
+                  <div className="relative group">
+                    {/* Main Circle */}
+                    <div className="w-16 h-16 rounded-full bg-white/20 dark:bg-gray-800/20 backdrop-blur-md border border-white/30 dark:border-gray-700/30 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300">
+                      {/* Glass Highlight */}
+                      <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/40 to-transparent dark:from-white/20 pointer-events-none" />
+                      <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-white/60 dark:bg-white/40 blur-sm" />
 
-                    {/* Secondary highlight */}
-                    <div className="absolute top-1 left-1 w-3 h-3 md:w-4 md:h-4 bg-white/60 rounded-full blur-sm" />
+                      {/* Skill Icon */}
+                      <span className="text-2xl relative z-10">{skills[index].icon}</span>
 
-                    {/* Skill Icon */}
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-300">
-                      {skill.icon}
+                      {/* Hover Glow */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-md" />
                     </div>
 
-                    {/* Skill Name with better styling */}
-                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                      <span className="text-gray-800 dark:text-gray-200 text-sm md:text-base font-bold drop-shadow-lg bg-white/90 dark:bg-gray-800/90 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-600 backdrop-blur-sm whitespace-nowrap">
-                        {skill.name}
-                      </span>
+                    {/* Skill Label */}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-black/80 dark:bg-white/90 text-white dark:text-black text-xs rounded-full whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {skills[index].name}
                     </div>
-
-                    {/* Enhanced 3D depth shadow */}
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-3 md:w-16 md:h-4 bg-black/30 rounded-full blur-lg" />
-
-                    {/* Glow effect on hover */}
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${skill.color} rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}
-                    />
                   </div>
                 </motion.div>
               ))}
-
-              {/* Profile Image Container */}
-              <div className="relative inline-block">
-                {/* Enhanced Static Ring */}
-                <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 rounded-full z-[110]">
-                  <div className="w-full h-full rounded-full border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-1">
-                    <div className="w-full h-full rounded-full bg-white dark:bg-black" />
-                  </div>
-                </div>
-
-                {/* Enhanced Glow Effect */}
-                <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-full blur-2xl opacity-25 animate-pulse z-[105]" />
-
-                {/* Profile Image */}
-                <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-6 border-white dark:border-gray-900 shadow-2xl z-[110]">
-                  <img
-                    src="/placeholder.svg?height=224&width=224"
-                    alt="Alex Johnson"
-                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
-
-                {/* Enhanced Status Indicator */}
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                  className="absolute bottom-6 right-6 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-900 shadow-lg z-[120]"
-                >
-                  <div className="w-full h-full bg-green-400 rounded-full animate-ping opacity-75" />
-                </motion.div>
-              </div>
             </div>
           </motion.div>
 
-          {/* Name Section - Moved below profile image */}
+          {/* Name and Title */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="mb-12 relative z-[100]"
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mb-8"
           >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                Hi, I'm Alex Johnson
-              </span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent">
+              Aagam Jain
             </h1>
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 font-light">
+              Full Stack Developer & UI/UX Designer
+            </p>
           </motion.div>
 
-          {/* Enhanced CTA Buttons */}
+          {/* Experience Stats */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center mb-16 relative z-20"
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 max-w-4xl mx-auto"
+          >
+            {experienceStats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group"
+              >
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-gray-700/20 shadow-lg hover:shadow-xl transition-all duration-300">
+                  {/* Icon */}
+                  <div
+                    className={`w-12 h-12 rounded-xl bg-gradient-to-r ${stat.color} flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    <stat.icon className="h-6 w-6 text-white" />
+                  </div>
+
+                  {/* Value */}
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{stat.value}</div>
+
+                  {/* Label */}
+                  <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">{stat.label}</div>
+
+                  {/* Hover Glow */}
+                  <div
+                    className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-xl`}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
           >
             <Button
               size="lg"
-              onClick={() => scrollToSection("projects")}
-              className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 px-8 py-4 text-lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
             >
-              <Briefcase className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
-              View My Work
+              <span className="mr-2">View My Work</span>
+              <ExternalLink className="h-4 w-4" />
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => scrollToSection("contact")}
-              className="group border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all duration-300 px-8 py-4 text-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
-            >
-              <Mail className="mr-3 h-6 w-6 group-hover:rotate-12 transition-transform" />
-              Let's Connect
-            </Button>
-            <Button
-              size="lg"
-              variant="ghost"
-              className="group hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 px-8 py-4 text-lg bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm"
-            >
-              <Download className="mr-3 h-6 w-6 group-hover:bounce transition-transform" />
-              Download CV
-            </Button>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full p-3 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors duration-300 bg-transparent"
+              >
+                <Github className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full p-3 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors duration-300 bg-transparent"
+              >
+                <Linkedin className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full p-3 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors duration-300 bg-transparent"
+              >
+                <Mail className="h-5 w-5" />
+              </Button>
+            </div>
           </motion.div>
 
-          {/* Enhanced Scroll Indicator */}
+          {/* Scroll Indicator */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.4 }}
-            className="flex flex-col items-center relative z-20"
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="flex flex-col items-center"
           >
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-medium">Scroll to explore my journey</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Scroll to explore</p>
             <motion.div
-              animate={{ y: [0, 15, 0] }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-              className="cursor-pointer group"
-              onClick={() => scrollToSection("about")}
+              animate={{ y: [0, 10, 0] }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+              className="p-2 rounded-full border-2 border-gray-300 dark:border-gray-600"
             >
-              <div className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-blue-500 dark:group-hover:border-blue-400 flex items-center justify-center transition-colors duration-300 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-                <ArrowDown className="h-6 w-6 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
-              </div>
+              <ArrowDown className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )
