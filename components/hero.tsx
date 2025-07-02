@@ -4,17 +4,37 @@ import { ArrowDown, Download, Mail, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const Hero = () => {
-  // 5 skills to display around profile picture at random positions
+  // 5 skills positioned strategically around profile picture for visual balance
   const profileSkills = [
-    { name: "React", color: "from-blue-400 to-blue-600", icon: "⚛️", position: { top: "-20px", left: "-30px" } },
-    { name: "JS", color: "from-yellow-400 to-yellow-600", icon: "🟨", position: { top: "20px", right: "-40px" } },
-    { name: "Node", color: "from-green-400 to-green-600", icon: "🟢", position: { bottom: "30px", left: "-25px" } },
-    { name: "Python", color: "from-green-500 to-blue-500", icon: "🐍", position: { bottom: "-10px", right: "-35px" } },
+    {
+      name: "React",
+      color: "from-blue-400 to-blue-600",
+      icon: "⚛️",
+      position: { top: "10px", left: "-45px" },
+    },
+    {
+      name: "JS",
+      color: "from-yellow-400 to-yellow-600",
+      icon: "🟨",
+      position: { top: "-15px", right: "-30px" },
+    },
+    {
+      name: "Node",
+      color: "from-green-400 to-green-600",
+      icon: "🟢",
+      position: { bottom: "15px", left: "-40px" },
+    },
+    {
+      name: "Python",
+      color: "from-green-500 to-blue-500",
+      icon: "🐍",
+      position: { bottom: "-20px", right: "-25px" },
+    },
     {
       name: "Firebase",
       color: "from-orange-400 to-red-500",
       icon: "🔥",
-      position: { top: "50%", left: "-50px", transform: "translateY(-50%)" },
+      position: { top: "50%", right: "-55px", transform: "translateY(-50%)" },
     },
   ]
 
@@ -51,26 +71,28 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.2, type: "spring", stiffness: 100 }}
             className="mb-8 mt-8 relative z-[100] inline-block"
           >
-            {/* Container for profile and surrounding skills */}
-            <div className="relative" style={{ padding: "80px" }}>
-              {/* Floating Skills Around Profile */}
+            {/* Container for profile and surrounding skills - balanced spacing */}
+            <div className="relative" style={{ padding: "70px 80px" }}>
+              {/* Floating Skills Around Profile - Strategically positioned */}
               {profileSkills.map((skill, index) => (
                 <motion.div
                   key={skill.name}
-                  initial={{ opacity: 0, scale: 0 }}
+                  initial={{ opacity: 0, scale: 0, rotate: -180 }}
                   animate={{
                     opacity: 1,
                     scale: 1,
-                    y: [0, -10, 0],
+                    rotate: 0,
+                    y: [0, -8, 0],
                   }}
                   transition={{
-                    opacity: { duration: 0.8, delay: 1.5 + index * 0.2 },
-                    scale: { duration: 0.8, delay: 1.5 + index * 0.2 },
+                    opacity: { duration: 0.6, delay: 1.2 + index * 0.15 },
+                    scale: { duration: 0.6, delay: 1.2 + index * 0.15 },
+                    rotate: { duration: 0.8, delay: 1.2 + index * 0.15 },
                     y: {
-                      duration: 3,
+                      duration: 2.5 + index * 0.3,
                       repeat: Number.POSITIVE_INFINITY,
                       ease: "easeInOut",
-                      delay: index * 0.5,
+                      delay: index * 0.4,
                     },
                   }}
                   className="absolute z-[120]"
@@ -82,56 +104,65 @@ const Hero = () => {
                     transform: skill.position.transform,
                   }}
                 >
-                  {/* 3D Glassmorphism Square */}
+                  {/* 3D Glassmorphism Square with enhanced styling */}
                   <div
                     className={`
-                    w-14 h-14 md:w-18 md:h-18
+                    w-16 h-16 md:w-20 md:h-20
                     bg-gradient-to-br ${skill.color}
-                    rounded-xl
-                    shadow-2xl shadow-black/30 dark:shadow-black/50
-                    border border-white/40 dark:border-white/20
+                    rounded-2xl
+                    shadow-2xl shadow-black/40 dark:shadow-black/60
+                    border-2 border-white/50 dark:border-white/30
                     relative overflow-hidden
-                    backdrop-blur-lg
-                    hover:scale-110 transition-transform duration-300 cursor-pointer
+                    backdrop-blur-xl
+                    hover:scale-110 hover:rotate-6 transition-all duration-300 cursor-pointer
+                    group
                   `}
                     style={{
-                      background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-                      backdropFilter: "blur(20px)",
-                      WebkitBackdropFilter: "blur(20px)",
+                      background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%), linear-gradient(to bottom right, var(--tw-gradient-stops))`,
+                      backdropFilter: "blur(25px)",
+                      WebkitBackdropFilter: "blur(25px)",
                     }}
                   >
-                    {/* Glass highlight */}
-                    <div className="absolute top-1 left-1 w-4 h-4 md:w-6 md:h-6 bg-white/30 rounded-lg blur-md" />
+                    {/* Enhanced glass highlight */}
+                    <div className="absolute top-2 left-2 w-6 h-6 md:w-8 md:h-8 bg-white/40 rounded-xl blur-sm" />
+
+                    {/* Secondary highlight */}
+                    <div className="absolute top-1 left-1 w-3 h-3 md:w-4 md:h-4 bg-white/60 rounded-lg blur-sm" />
 
                     {/* Skill Icon */}
-                    <div className="absolute inset-0 flex items-center justify-center text-xl md:text-2xl">
+                    <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-300">
                       {skill.icon}
                     </div>
 
-                    {/* Skill Name */}
-                    <div className="absolute -bottom-7 left-0 right-0 text-center">
-                      <span className="text-gray-700 dark:text-gray-300 text-xs md:text-sm font-bold drop-shadow-lg bg-white/80 dark:bg-gray-900/80 px-2 py-1 rounded-md">
+                    {/* Skill Name with better styling */}
+                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
+                      <span className="text-gray-800 dark:text-gray-200 text-sm md:text-base font-bold drop-shadow-lg bg-white/90 dark:bg-gray-800/90 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-600 backdrop-blur-sm">
                         {skill.name}
                       </span>
                     </div>
 
-                    {/* 3D depth shadow */}
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-10 h-2 md:w-14 md:h-3 bg-black/20 rounded-lg blur-md" />
+                    {/* Enhanced 3D depth shadow */}
+                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-3 md:w-16 md:h-4 bg-black/30 rounded-full blur-lg" />
+
+                    {/* Glow effect on hover */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${skill.color} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}
+                    />
                   </div>
                 </motion.div>
               ))}
 
               {/* Profile Image Container */}
               <div className="relative inline-block">
-                {/* Static Ring */}
+                {/* Enhanced Static Ring */}
                 <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 rounded-full z-[110]">
                   <div className="w-full h-full rounded-full border-4 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-1">
                     <div className="w-full h-full rounded-full bg-white dark:bg-black" />
                   </div>
                 </div>
 
-                {/* Glow Effect */}
-                <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-full blur-2xl opacity-20 animate-pulse z-[105]" />
+                {/* Enhanced Glow Effect */}
+                <div className="absolute inset-0 w-48 h-48 md:w-56 md:h-56 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-full blur-2xl opacity-25 animate-pulse z-[105]" />
 
                 {/* Profile Image */}
                 <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-6 border-white dark:border-gray-900 shadow-2xl z-[110]">
@@ -142,7 +173,7 @@ const Hero = () => {
                   />
                 </div>
 
-                {/* Status Indicator */}
+                {/* Enhanced Status Indicator */}
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
