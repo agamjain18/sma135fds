@@ -104,17 +104,17 @@ const Hero = () => {
                     transform: skill.position.transform,
                   }}
                 >
-                  {/* 3D Glassmorphism Square with enhanced styling */}
+                  {/* 3D Glassmorphism Circle with enhanced styling */}
                   <div
                     className={`
                     w-16 h-16 md:w-20 md:h-20
                     bg-gradient-to-br ${skill.color}
-                    rounded-2xl
+                    rounded-full
                     shadow-2xl shadow-black/40 dark:shadow-black/60
                     border-2 border-white/50 dark:border-white/30
                     relative overflow-hidden
                     backdrop-blur-xl
-                    hover:scale-110 hover:rotate-6 transition-all duration-300 cursor-pointer
+                    hover:scale-110 hover:rotate-12 transition-all duration-300 cursor-pointer
                     group
                   `}
                     style={{
@@ -124,10 +124,10 @@ const Hero = () => {
                     }}
                   >
                     {/* Enhanced glass highlight */}
-                    <div className="absolute top-2 left-2 w-6 h-6 md:w-8 md:h-8 bg-white/40 rounded-xl blur-sm" />
+                    <div className="absolute top-2 left-2 w-6 h-6 md:w-8 md:h-8 bg-white/40 rounded-full blur-sm" />
 
                     {/* Secondary highlight */}
-                    <div className="absolute top-1 left-1 w-3 h-3 md:w-4 md:h-4 bg-white/60 rounded-lg blur-sm" />
+                    <div className="absolute top-1 left-1 w-3 h-3 md:w-4 md:h-4 bg-white/60 rounded-full blur-sm" />
 
                     {/* Skill Icon */}
                     <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-300">
@@ -146,7 +146,7 @@ const Hero = () => {
 
                     {/* Glow effect on hover */}
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${skill.color} rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}
+                      className={`absolute inset-0 bg-gradient-to-br ${skill.color} rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}
                     />
                   </div>
                 </motion.div>
