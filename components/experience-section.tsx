@@ -1,11 +1,14 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Calendar, MapPin, Building, Award, ExternalLink } from "lucide-react"
+import { Calendar, MapPin, Building, ExternalLink } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 
 const ExperienceSection = () => {
+  const router = useRouter()
+
   const experiences = [
     {
       id: 1,
@@ -107,6 +110,10 @@ const ExperienceSection = () => {
     }
   }
 
+  const handleExperienceClick = (experienceId: number) => {
+    router.push(`/experience/${experienceId}`)
+  }
+
   return (
     <section id="experience" className="py-20 px-6 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto max-w-6xl">
@@ -154,7 +161,8 @@ const ExperienceSection = () => {
                 <Card
                   className={`w-full md:w-5/12 ml-16 md:ml-0 ${
                     index % 2 === 0 ? "md:mr-auto md:ml-0" : "md:ml-auto md:mr-0"
-                  } hover:shadow-xl transition-all duration-300 group`}
+                  } hover:shadow-xl transition-all duration-300 group cursor-pointer hover:scale-105`}
+                  onClick={() => handleExperienceClick(exp.id)}
                 >
                   <CardContent className="p-6">
                     {/* Header */}
@@ -169,9 +177,7 @@ const ExperienceSection = () => {
                           </h3>
                           <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                             <span className="font-medium">{exp.company}</span>
-                            {exp.website && (
-                              <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:text-blue-600" />
-                            )}
+                            <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </div>
                       </div>
@@ -194,38 +200,36 @@ const ExperienceSection = () => {
                     </div>
 
                     {/* Description */}
-                    <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">{exp.description}</p>
+                    <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3">
+                      {exp.description}
+                    </p>
 
-                    {/* Achievements */}
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-1">
-                        <Award className="h-4 w-4" />
-                        Key Achievements
-                      </h4>
-                      <ul className="space-y-1">
-                        {exp.achievements.map((achievement, idx) => (
-                          <li key={idx} className="text-sm text-gray-600 dark:text-gray-300 flex items-start gap-2">
-                            <span className="text-green-500 mt-1">•</span>
-                            <span>{achievement}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Technologies */}
+                    {/* Technologies Preview */}
                     <div>
-                      <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Technologies Used</h4>
                       <div className="flex flex-wrap gap-2">
-                        {exp.technologies.map((tech, idx) => (
+                        {exp.technologies.slice(0, 4).map((tech, idx) => (
                           <Badge
                             key={idx}
                             variant="secondary"
-                            className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors"
+                            className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                           >
                             {tech}
                           </Badge>
                         ))}
+                        {exp.technologies.length > 4 && (
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                          >
+                            +{exp.technologies.length - 4} more
+                          </Badge>
+                        )}
                       </div>
+                    </div>
+
+                    {/* Click to view more indicator */}
+                    <div className="mt-4 text-sm text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Click to view full details →
                     </div>
                   </CardContent>
                 </Card>
