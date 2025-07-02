@@ -7,7 +7,6 @@ import Skills from "@/components/skills"
 import Projects from "@/components/projects"
 import Contact from "@/components/contact"
 import Footer from "@/components/footer"
-import AddProjectDialog from "@/components/add-project-dialog"
 
 // Project data structure
 const projectsData = [
@@ -98,7 +97,6 @@ export default function Portfolio() {
           <Contact />
         </main>
         <Footer />
-        <AddProjectDialog />
       </div>
     </ThemeProvider>
   )
